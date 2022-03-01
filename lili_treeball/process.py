@@ -17,7 +17,7 @@ if __name__ == "__main__":
     indexes = []
     for i in range(len(distances)):
         closest_index = np.where(distances[i] == np.amin(distances[i]))[0][0]
-        closest_index = indexes_2[i][closest_index]
+        closest_index = ind[i][closest_index]
         indexes.append(closest_index)
 
     data = pd.read_pickle("data.pkl")
