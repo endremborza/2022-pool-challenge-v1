@@ -3,28 +3,23 @@ import json
 import pandas as pd
 
 if __name__ == "__main__":
-    df = pd.read_pickle("data.pkl")
-    ydict = df.to_dict('index')
+    with open('treesave.pkl', 'rb') as handle:
+        tree = pickle.load(handle)
+
     input_locations = json.loads(Path("input.json").read_text())
 
-    def get_distance(row, query):
-        keys = [f"{ax}_position" for ax in ["x", "y", "z"]] # oszlopok nevei
-        return sum([(row[k] - query[k]) ** 2 for k in keys]) ** 0.5 # kiszámolja a távolságot
+    input = np.array([list(i.values()) for i in input_locations])
 
-    fkeys = ["msec", "subject", "trial"]
+    dist, ind = tree.query(input, k = 5)
 
-    out = []
-    for input_place in input_locations: # végigiterál az oszlopokon
-        min_dist = float("inf") 
-        closest = {}
-        for key in ydict:
-            if ydict.get(key)['keycode'] == 'p':
-                distance = get_distance(ydict.get(key), input_place)
-                if distance < min_dist:
-                    min_dist = distance
-                    closest["msec"] = ydict.get(key)["msec"]
-                    closest["subject"] = ydict.get(key)["subject"]
-                    closest["trial"] = ydict.get(key)["trial"]
-        out.append(closest)
-    
-    Path("output.json").write_text(json.dumps(out))
+    distances = [dist[i] for i in range(len(dist))]
+
+    indexes = []
+    for i in range(len(distances)):
+        closest_index = np.where(distances[i] == np.amin(distances[i]))[0][0]
+        closest_index = indexes_2[i][closest_index]
+        indexes.append(closest_index)
+
+    data = pd.read_pickle("data.pkl")
+    own_results = data.iloc[indexes,[1,-2,-1]].to_dict("records")
+    Path("output.json").write_text(json.dumps(own_results))
