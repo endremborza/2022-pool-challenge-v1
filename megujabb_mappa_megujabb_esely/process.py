@@ -1,6 +1,8 @@
 from pathlib import Path
 import json
 import pandas as pd
+import pickle
+from sklearn.neighbors import BallTree
 
 if __name__ == "__main__":
     with open('treesave.pkl', 'rb') as handle:
@@ -23,3 +25,4 @@ if __name__ == "__main__":
     data = pd.read_pickle("data.pkl")
     own_results = data.iloc[indexes,[1,-2,-1]].to_dict("records")
     Path("output.json").write_text(json.dumps(own_results))
+    

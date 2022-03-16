@@ -3,7 +3,6 @@ import numpy as np
 import pickle
 from sklearn.neighbors import BallTree
 
-
 data = pd.read_csv("data.csv")
 data = data.loc[data["entity_id"] == 0].drop_duplicates(subset = ["msec","subject","trial"]).dropna().reset_index()
 data.to_pickle("data.pkl")
